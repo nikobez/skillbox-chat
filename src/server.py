@@ -10,12 +10,9 @@ from twisted.internet.protocol import ServerFactory, connectionDone
 from twisted.protocols.basic import LineOnlyReceiver
 
 
-# start /w pkgmgr /iu:"TelnetClient" - включение Telnet на Windows
-
-
 class Handler(LineOnlyReceiver):
     factory: 'Server'
-    login: str  # login:SOME_TEXT
+    login: str
 
     def connectionLost(self, reason=connectionDone):
         self.factory.clients.remove(self)
@@ -33,13 +30,14 @@ class Handler(LineOnlyReceiver):
             message = f"<{self.login}>: {message}"
 
             for user in self.factory.clients:
-                if user is not self:
-                    user.sendLine(message.encode())
+                # if user is not self:
+                user.sendLine(message.encode())
         else:
             if message.startswith("login:"):
                 login = message.replace("login:", "")
 
                 self.login = login
+
                 print(f"New user: {login}")
                 self.sendLine("Welcome!!!".encode())
             else:
